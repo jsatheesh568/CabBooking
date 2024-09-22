@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +26,7 @@ public class CabBookingController {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved list"),
             @ApiResponse(responseCode = "204", description = "No cabs available")
     })
-    @GetMapping("/all")
+    @GetMapping("/all-cab-details")
     public ResponseEntity<List<CabBooking>> getAllCabs() {
         List<CabBooking> allCabs = cabBookingService.getAllCabs();
         if (allCabs.isEmpty()) {
@@ -56,12 +57,13 @@ public class CabBookingController {
             @ApiResponse(responseCode = "400", description = "Cab booking could not be cancelled")
     })
     @PostMapping("/cancel/{id}")
-    public ResponseEntity<String> cancelBooking(@PathVariable Long id) {
-        Optional<CabBooking> cancellation = cabBookingService.cancelBooking(id);
-        if (cancellation.isPresent()) {
-            return ResponseEntity.ok("Booking cancelled successfully");
+    public ResponseEntity<String> cancelBooking(@PathVariable Long bookingId) {
+        Optional<CabBooking> cancelledCab = cabBookingService.cancelBooking(bookingId);
+        if (cancelledCab.isPresent()) {
+            return ResponseEntity.ok("CANCELLED");
+        } else {
+            return ResponseEntity.badRequest().body("Cab booking could not be cancelled");
         }
-        return ResponseEntity.status(400).body("Cab booking could not be cancelled");
     }
 
     // Get cabs by customer name
@@ -73,10 +75,7 @@ public class CabBookingController {
     @GetMapping("/customer/{customerName}")
     public ResponseEntity<List<CabBooking>> getCabsByCustomer(@PathVariable String customerName) {
         List<CabBooking> cabs = cabBookingService.getCabsByCustomer(customerName);
-        if (cabs.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.ok(cabs);
+        return ResponseEntity.ok(cabs); // This will return 200 OK even if the list is empty
     }
 
     // Check if a cab is booked
@@ -100,8 +99,12 @@ public class CabBookingController {
             @ApiResponse(responseCode = "200", description = "New cab added successfully")
     })
     @PostMapping("/admin/add-cab")
-    public ResponseEntity<String> addNewCab(@RequestParam String cabNumber) {
+    public ResponseEntity<String> addNewCab(String cabNumber) {
         CabBooking newCab = cabBookingService.addNewCab(cabNumber);
-        return ResponseEntity.ok("New cab added with number: " + newCab.getCabNumber());
+        if (newCab == null) {
+            return new ResponseEntity<>("Failed to add new cab", HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(newCab.getStatus(), HttpStatus.OK);
     }
+
 }
