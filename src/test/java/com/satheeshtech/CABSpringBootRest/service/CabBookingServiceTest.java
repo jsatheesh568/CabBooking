@@ -3,12 +3,15 @@ package com.satheeshtech.CABSpringBootRest.service;
 import com.satheeshtech.CABSpringBootRest.model.CabBooking;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@RunWith ( MockitoJUnitRunner.class )
 class CabBookingServiceTest {
 
     private CabBookingService cabBookingService;
