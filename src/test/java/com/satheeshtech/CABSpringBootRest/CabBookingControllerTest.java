@@ -5,9 +5,11 @@ import com.satheeshtech.CABSpringBootRest.model.CabBooking;
 import com.satheeshtech.CABSpringBootRest.service.CabBookingService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -18,6 +20,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 public class CabBookingControllerTest {
 
     @Mock
@@ -52,7 +55,6 @@ public class CabBookingControllerTest {
         verify(cabBookingService, times(1)).getAllCabs();
     }
 
-
     @Test
     void testBookCabSuccess() {
         // Arrange
@@ -78,10 +80,9 @@ public class CabBookingControllerTest {
 
         // Assert
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("Cab not available for booking", response.getBody()); // Assert the actual error message
+        assertEquals("Cab not available for booking", response.getBody());
         verify(cabBookingService, times(1)).bookCab(1L, "John");
     }
-
 
     @Test
     void testCancelBookingSuccess() {
@@ -108,10 +109,9 @@ public class CabBookingControllerTest {
 
         // Assert
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("Cab booking could not be cancelled", response.getBody()); // Check for the actual error message
+        assertEquals("Cab booking could not be cancelled", response.getBody());
         verify(cabBookingService, times(1)).cancelBooking(1L);
     }
-
 
     @Test
     void testGetCabsByCustomerSuccess() {
@@ -131,7 +131,6 @@ public class CabBookingControllerTest {
         verify(cabBookingService, times(1)).getCabsByCustomer("John");
     }
 
-
     @Test
     void testGetCabsByCustomerEmpty() {
         // Arrange
@@ -146,8 +145,6 @@ public class CabBookingControllerTest {
         assertTrue(response.getBody().isEmpty());
         verify(cabBookingService, times(1)).getCabsByCustomer("John");
     }
-
-
 
     @Test
     void testIsCabBookedTrue() {
@@ -173,10 +170,9 @@ public class CabBookingControllerTest {
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Cab is available", response.getBody()); // Adjust to match the actual response from the controller
+        assertEquals("Cab is available", response.getBody());
         verify(cabBookingService, times(1)).isCabBooked(1L);
     }
-
 
     @Test
     void testAddNewCabSuccess() {
@@ -202,9 +198,8 @@ public class CabBookingControllerTest {
         ResponseEntity<String> response = cabBookingController.addNewCab("CAB-000");
 
         // Assert
-        assertEquals("Failed to add new cab", response.getBody()); // Check the error message
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Failed to add new cab", response.getBody());
         verify(cabBookingService, times(1)).addNewCab("CAB-000");
     }
-
 }
